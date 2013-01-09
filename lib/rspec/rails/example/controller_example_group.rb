@@ -64,7 +64,7 @@ module RSpec::Rails
         metadata[:example_group][:described_class].class_eval(&body)
 
         before do
-          @orig_routes, @routes = @routes, ActionDispatch::Routing::RouteSet.new
+          @orig_routes, @routes = @routes, @routes.dup
           @routes.draw { resources :anonymous }
 
           routes = @routes

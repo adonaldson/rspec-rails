@@ -383,3 +383,39 @@ Feature: anonymous controller
     """
     When I run `rspec spec`
     Then the examples should all pass
+
+  Scenario: redirecting via a before_filter with a named route in ApplicationController
+    Given a file named "spec/controllers/application_controller_spec.rb" with:
+    """ruby
+    require "spec_helper"
+
+    Rails.application.routes.draw do
+      root :to => "sessions#new"
+    end
+
+    class ApplicationController < ActionController::Base
+      private
+
+      def redirect_to_root
+        redirect_to(root_path)
+      end
+    end
+
+    describe ApplicationController do
+      controller do
+        before_filter :redirect_to_root, :only => :show
+
+        def show
+        end
+      end
+
+      context "GET #show" do
+        it "redirects to the root" do
+          get :show, :id => 1
+          expect(response).to redirect_to('/')
+        end
+      end
+    end
+    """
+    When I run `rspec spec`
+    Then the examples should all pass
